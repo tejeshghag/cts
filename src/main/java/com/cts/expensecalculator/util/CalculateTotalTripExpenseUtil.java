@@ -36,8 +36,11 @@ public class CalculateTotalTripExpenseUtil {
 
     private TravelBean calculateExpensesForDieselVehicle(VehicleBean vehicle, TravelBean travelBean) {
         Double standardRate = calculateExtraPeopleexpense(vehicle, travelBean);
-        Double total = (travelBean.getDistance() * standardRate) - vehicle.getVehicleSpecs().getDieselDiscount();
-        total = calculateExtraExpenses(vehicle, total);
+        standardRate = standardRate - vehicle.getVehicleSpecs().getDieselDiscount();
+        standardRate = calculateExtraExpenses(vehicle, standardRate);
+
+        Double total = travelBean.getDistance() * standardRate;
+
         travelBean.setTotalExpense(total);
         return travelBean;
     }

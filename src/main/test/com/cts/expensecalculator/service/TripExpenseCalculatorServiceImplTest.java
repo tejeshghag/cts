@@ -26,30 +26,49 @@ public class TripExpenseCalculatorServiceImplTest {
     }
 
     @Test
-    public void shouldResultCorrectFareForACPetrolSUV_WhenCarWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
-        travelBean = service.calculateTotalTripExpense(getSamplePetrolACVehicleDetails1(),getSampleTravelDetails1());
+    public void shouldReturnCorrectFareForACPetrolSUV_WhenCarWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
+        travelBean = service.calculateTotalTripExpense(getSUVPetrolACVehicleDetails(),getSampleTravelDetails());
         assertThat(travelBean.getTotalExpense(),equalTo(20400d));
     }
 
     @Test
-    public void shouldResultCorrectFareForACPetrolBus_WhenBusWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
-        travelBean = service.calculateTotalTripExpense(getSamplePetrolACBusDetails(),getSampleTravelDetails1());
+    public void shouldReturnCorrectFareForACPetrolBus_WhenBusWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
+        travelBean = service.calculateTotalTripExpense(getBusPetrolACDetails(),getSampleTravelDetails());
         assertThat(travelBean.getTotalExpense(),equalTo(20040d));
     }
 
     @Test
-    public void shouldResultCorrectFareForNonACPetrolSUV_WhenCarWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
-        travelBean = service.calculateTotalTripExpense(getSamplePetrolNonACVehicleDetails(),getSampleTravelDetails1());
+    public void shouldReturnCorrectFareForNonACPetrolSUV_WhenCarWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
+        travelBean = service.calculateTotalTripExpense(getSUVPetrolNonACVehicleDetails(),getSampleTravelDetails());
         assertThat(travelBean.getTotalExpense(),equalTo(18000d));
     }
 
     @Test
-    public void shouldResultCorrectFareForNonACPetrolBus_WhenBusWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
-        travelBean = service.calculateTotalTripExpense(getSamplePetrolNonACBusDetails(),getSampleTravelDetails1());
+    public void shouldReturnCorrectFareForNonACPetrolBus_WhenBusWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
+        travelBean = service.calculateTotalTripExpense(getBusPetrolNonACDetails(),getSampleTravelDetails());
         assertThat(travelBean.getTotalExpense(),equalTo(17640d));
     }
 
-    private TravelBean getSampleTravelDetails1() {
+    @Test
+    public void shouldReturnCorrectFareForACDieselSUV_WhenCarWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
+        travelBean = service.calculateTotalTripExpense(getSUVDieselACVehicleDetails(),getSampleTravelDetails());
+        assertThat(travelBean.getTotalExpense(),equalTo(19200d));
+    }
+
+    @Test
+    public void shouldReturnCorrectFareForNonACDieselSUV_WhenCarWith5PAXProvidedForPuneMumbaiBangalorePune() throws TripExpenseCalculatorException {
+        travelBean = service.calculateTotalTripExpense(getSUVDieselNonACVehicleDetails(),getSampleTravelDetails());
+        assertThat(travelBean.getTotalExpense(),equalTo(16800d));
+    }
+
+    @Test
+    public void shouldReturnCorrectFareForTravellersMoreThenMaxSeats_WhenSUVCarProvidedWithMaxSeatsToMumbai_Chennai() throws TripExpenseCalculatorException {
+        travelBean = service.calculateTotalTripExpense(getSUVDieselNonACVehicleDetails(),getSampleTravelDetailsWithMorePassengers());
+        assertThat(travelBean.getTotalExpense(),equalTo(19752d));
+    }
+
+
+    private TravelBean getSampleTravelDetails() {
         TravelBean travelBean = new TravelBean();
         travelBean.setUnit("km/h");
         travelBean.setTripName("Pune-Mumbai-Bangalore-Pune");
@@ -58,79 +77,63 @@ public class TripExpenseCalculatorServiceImplTest {
         return travelBean;
     }
 
-    private TravelBean getSampleTravelDetails2() {
-        TravelBean travelBean = new TravelBean();
-        travelBean.setUnit("km/h");
-        travelBean.setTripName("Mumbai-Chennai");
-        travelBean.setDistance(1234.5);
-        travelBean.setTotalTravellers(5);
-        return travelBean;
-    }
-
     private TravelBean getSampleTravelDetailsWithMorePassengers() {
         TravelBean travelBean = new TravelBean();
         travelBean.setUnit("km/h");
         travelBean.setTripName("Mumbai-Chennai");
         travelBean.setDistance(1234.5);
-        travelBean.setTotalTravellers(10);
+        travelBean.setTotalTravellers(9);
         return travelBean;
     }
 
-    private VehicleBean getSamplePetrolACVehicleDetails1() {
-        VehicleSpecificationBean specs = new VehicleSpecificationBean();
-        specs.setStandardRate(15d);
-        specs.setMaxSeats(7);
-        specs.setExtraRate(2d);
-        VehicleBean bean = new VehicleBean();
-        bean.setName("SUV");
-        bean.setAirConditioner(true);
-        bean.setFuelType("Petrol");
-        bean.setVehicleType("Car");
-        bean.setVehicleSpecs(specs);
+    private VehicleBean getSUVPetrolACVehicleDetails() {
+        VehicleBean bean = getVehicleDetails("Petrol");
         return bean;
     }
 
-    private VehicleBean getSamplePetrolACBusDetails() {
+    private VehicleBean getSUVDieselACVehicleDetails() {
+        VehicleBean bean = getVehicleDetails("Diesel");
+        bean.getVehicleSpecs().setDieselDiscount(1d);
+        return bean;
+    }
+
+    private VehicleBean getSUVDieselNonACVehicleDetails() {
+        VehicleBean bean = getVehicleDetails("Diesel");
+        bean.getVehicleSpecs().setDieselDiscount(1d);
+        bean.setAirConditioner(false);
+        return bean;
+    }
+
+    private VehicleBean getVehicleDetails(String transmissionType) {
         VehicleSpecificationBean specs = new VehicleSpecificationBean();
         specs.setStandardRate(15d);
         specs.setMaxSeats(7);
         specs.setExtraRate(2d);
         specs.setExtraPercentage(0.02);
         VehicleBean bean = new VehicleBean();
-        bean.setName("BUS");
-        bean.setAirConditioner(true);
-        bean.setFuelType("Petrol");
-        bean.setVehicleType("Bus");
-        bean.setVehicleSpecs(specs);
-        return bean;
-    }
-
-    private VehicleBean getSamplePetrolNonACVehicleDetails() {
-        VehicleSpecificationBean specs = new VehicleSpecificationBean();
-        specs.setStandardRate(15d);
-        specs.setMaxSeats(7);
-        specs.setExtraRate(2d);
-        VehicleBean bean = new VehicleBean();
         bean.setName("SUV");
-        bean.setAirConditioner(false);
-        bean.setFuelType("Petrol");
+        bean.setAirConditioner(true);
+        bean.setFuelType(transmissionType);
         bean.setVehicleType("Car");
         bean.setVehicleSpecs(specs);
         return bean;
     }
-
-    private VehicleBean getSamplePetrolNonACBusDetails() {
-        VehicleSpecificationBean specs = new VehicleSpecificationBean();
-        specs.setStandardRate(15d);
-        specs.setMaxSeats(7);
-        specs.setExtraRate(2d);
-        specs.setExtraPercentage(0.02);
-        VehicleBean bean = new VehicleBean();
-        bean.setName("BUS");
-        bean.setAirConditioner(false);
-        bean.setFuelType("Petrol");
+    private VehicleBean getBusPetrolACDetails() {
+        VehicleBean bean = getVehicleDetails("Petrol");
         bean.setVehicleType("Bus");
-        bean.setVehicleSpecs(specs);
+        return bean;
+    }
+
+    private VehicleBean getSUVPetrolNonACVehicleDetails() {
+        VehicleBean bean = getVehicleDetails("Petrol");
+        bean.setAirConditioner(false);
+        return bean;
+    }
+
+    private VehicleBean getBusPetrolNonACDetails() {
+        VehicleBean bean = getVehicleDetails("Petrol");
+        bean.setAirConditioner(false);
+        bean.setVehicleType("Bus");
         return bean;
     }
 
